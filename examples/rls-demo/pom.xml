@@ -63,6 +63,26 @@
     </dependencies>
 
     <profiles>
+        <!-- The example is never published: no sources, javadoc, signature or upload. -->
+        <profile>
+            <id>release</id>
+            <properties>
+                <maven.source.skip>true</maven.source.skip>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <gpg.skip>true</gpg.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <skipPublishing>true</skipPublishing>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- Spring Boot 4 ships Flyway auto-configuration in its own starter. -->
         <profile>
             <id>flyway-boot4</id>

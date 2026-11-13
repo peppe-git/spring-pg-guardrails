@@ -20,6 +20,8 @@ public final class RlsCatalog {
     private final List<String> schemas;
 
     /**
+     * Reads the catalog of the given schemas.
+     *
      * @param dataSource any role that can read the catalog
      * @param schemas schemas to inspect (e.g. {@code public})
      */

@@ -5,9 +5,11 @@ suspected vulnerabilities privately.
 
 ## Reporting
 
-Use GitHub's **private vulnerability reporting** on this repository ("Security" tab, "Report a vulnerability").
+Report privately through GitHub's private vulnerability reporting:
+<https://github.com/peppe-git/spring-pg-guardrails/security/advisories/new>.
+
 Please include the version or commit, PostgreSQL and Spring versions, and the smallest schema and code that shows
-the problem. Do not open a public issue.
+the problem. Do not open a public issue, and do not disclose the problem elsewhere before a fix is released.
 
 You can expect an acknowledgement within 7 days and an assessment within 30 days. Fixes are released as soon as
 they are ready; the reporter is acknowledged in the release notes unless anonymity is requested.

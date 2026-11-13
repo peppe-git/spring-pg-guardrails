@@ -2,7 +2,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         child.project.url.inherit.append.path="false">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.peppe-git</groupId>
@@ -24,9 +25,25 @@
 
     <developers>
         <developer>
+            <id>peppe-git</id>
             <name>Giuseppe Picciocchi</name>
+            <url>https://github.com/peppe-git</url>
         </developer>
     </developers>
+
+    <scm child.scm.connection.inherit.append.path="false"
+         child.scm.developerConnection.inherit.append.path="false"
+         child.scm.url.inherit.append.path="false">
+        <connection>scm:git:https://github.com/peppe-git/spring-pg-guardrails.git</connection>
+        <developerConnection>scm:git:https://github.com/peppe-git/spring-pg-guardrails.git</developerConnection>
+        <url>https://github.com/peppe-git/spring-pg-guardrails</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/peppe-git/spring-pg-guardrails/issues</url>
+    </issueManagement>
 
     <modules>
         <module>pg-rls-core</module>
@@ -136,11 +153,108 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.1.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.12.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.12.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <profiles>
+        <!-- Publication to Maven Central: sources, javadoc, signatures, upload. Only with -Prelease.
+             Locally: ./mvnw -Prelease -Dgpg.skip -DskipTests verify
+             The signer is Bouncy Castle: it reads the armored secret key from MAVEN_GPG_KEY and the passphrase from
+             MAVEN_GPG_PASSPHRASE, so no gpg executable is needed. Credentials for the upload come from the
+             settings.xml server "central". autoPublish is false: every deployment is confirmed by hand in the
+             Central Portal. -->
+        <profile>
+            <id>release</id>
+            <properties>
+                <central.skipUpload>false</central.skipUpload>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <release>${maven.compiler.release}</release>
+                            <detectJavaApiLink>false</detectJavaApiLink>
+                            <!-- Every doclint check except "missing comment": a broken reference or malformed
+                                 HTML fails the release, an undocumented getter does not. -->
+                            <doclint>all,-missing</doclint>
+                            <failOnWarnings>true</failOnWarnings>
+                            <quiet>true</quiet>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <signer>bc</signer>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                            <skipUpload>${central.skipUpload}</skipUpload>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- Runs the whole build against the last Spring Boot 3 line (Spring Framework 6.2, Hibernate 6.6):
              ./mvnw verify -Dboot3 -->
         <profile>
