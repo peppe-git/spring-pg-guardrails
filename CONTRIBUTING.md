@@ -43,6 +43,8 @@ legacy[-_ ]?portal
 Without the variable the script warns on stderr and runs the generic rules; with the variable pointing to a missing
 file, or to a file with an invalid expression, it exits with code 2. Never commit the private file.
 
+Maintainers release as described in [RELEASING.md](RELEASING.md).
+
 ## Rules for changes
 
 - **Every guard must be seen failing.** A new rule comes with a fixture it reports and a test asserting the exact

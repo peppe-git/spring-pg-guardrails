@@ -17,3 +17,5 @@ All notable changes to this project are documented here. The format follows
   `InjectedClockConsistency`, `UnambiguousComponentConstructors`, `AsyncExecutorDeclared`, `OnConflictHasArbiter`,
   `JpaNullabilityMatchesSchema`, `EnumValuesMatchCheckConstraints`, `MigrationChecksumLedger`.
 - `examples/rls-demo`: a Testcontainers application with every guard, and a broken migration the guards catch.
+- Release tooling: Maven Central metadata, a `release` profile (sources, javadoc, signatures, Central Portal upload
+  with manual publication), a release workflow triggered by `v*` tags, Dependabot, and `RELEASING.md`.
