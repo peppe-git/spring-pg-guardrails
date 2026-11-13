@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: Apache-2.0
+# Build, test (Testcontainers needs the Docker daemon of the runner) and scrub check.
+# Third-party actions are pinned by commit SHA; the comment names the release it corresponds to.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scrub-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Scrub check
+        run: scripts/scrub-check.sh
+
+  build:
+    name: build (java ${{ matrix.java }}, spring boot ${{ matrix.boot }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21']
+        boot: ['4', '3']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Verify
+        run: ./mvnw -B -ntp verify ${{ matrix.boot == '3' && '-Dboot3' || '' }}

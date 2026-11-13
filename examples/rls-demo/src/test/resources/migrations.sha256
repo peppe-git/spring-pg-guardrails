@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# <migration file> <sha-256 of its content, line endings normalised>
+V1__rls_helpers.sql a570c8c3a2bca6cbff967961296d8c8587e8f09800934de7184ced9dffc71bb4
+V2__projects.sql c0253b7b906463cf0646e465fb759b547a6389fdfc35f6b604a229d505804f83
